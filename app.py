@@ -6,6 +6,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import datetime
 import requests
+import dash_table
 
 
 today_data = datetime.datetime.today().strftime('%Y-%m-%d')
@@ -63,6 +64,12 @@ app.layout = html.Div(style={'background': colors['background']}, children=[
         id='currency-graph',
     ),
 
+    html.Div(
+        dash_table.DataTable(
+            id='currency-table',
+        )
+    ),
+
     html.Div(id='hidden-data', style={'display': 'none'})
 ])
 
@@ -76,6 +83,46 @@ def get_data(base_currency):
     currency_df = pd.DataFrame(currency_data.json())
 
     return currency_df.to_json(date_format='iso', orient='split')
+
+@app.callback(
+    [Output('currency-table', 'columns'),
+     Output('currency-table', 'data')],
+    [Input('hidden-data', 'children'),
+     Input('currencies-dropdown', 'value')]
+)
+def create_table(currency_df, currencies):
+    currency_df_json = pd.read_json(currency_df, orient='split')
+    limit_to_five = currency_df_json[-5:]
+
+    columns = [{'name': 'currency', 'id': 'currency'}]
+    date_columns = [
+        {'name': data.strftime('%d-%m-%Y'), 'id': data.strftime('%d-%m-%Y')}
+        for data in limit_to_five.index]
+    columns.extend(date_columns)
+
+    rows = []
+    for currency in currencies:
+        single_row = {
+            'currency': currency
+        }
+        for rate, date in zip(limit_to_five['rates'], date_columns):
+            date_column = date['id']
+            single_row[date_column] = rate[currency]
+        rows.append(single_row)
+    # columns = [{'name': 'Date', 'id': 'date'}]
+    # dynamic_columns = [{'name': currency, 'id': currency} for currency in ['USD', 'CAD']]
+    # columns.extend(dynamic_columns)
+    #
+    # rows = []
+    # for data, rate in zip(limit_to_five.index, limit_to_five['rates']):
+    #     single_row = {}
+    #     string_date = data.strftime('%d-%m-%Y')
+    #     single_row['date'] = string_date
+    #     for currency in ['CAD', 'USD']:
+    #         single_row[currency] = rate[currency]
+    #     rows.append(single_row)
+
+    return columns, rows
 
 
 @app.callback(

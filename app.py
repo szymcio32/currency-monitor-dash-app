@@ -94,20 +94,69 @@ app.layout = html.Div(style={'background': colors['background']}, children=[
         id='currency-graph',
     ),
 
+    html.H2(
+        id="table-header",
+        style={
+            'textAlign': 'center',
+            'color': colors['text']
+        }
+    ),
+
     html.Div(
-        dash_table.DataTable(
-            id='currency-table',
-        )
+        html.Div(
+            dash_table.DataTable(
+                id='currency-table',
+                merge_duplicate_headers=True,
+                style_header={
+                    'textAlign': 'center',
+                    'fontWeight': 'bold',
+                    'fontSize': '15px'
+                },
+                style_cell={
+                    'padding': '10px',
+                    'backgroundColor': colors['background'],
+                    'color': colors['text'],
+                    'border': 'none',
+                },
+                style_data_conditional=[
+                    {
+                        'if': {
+                            'column_id': 'currency'
+                        },
+                        'fontSize': '15px',
+                        'color': '#CCF1FF',
+                        'textAlign': 'center',
+                        'padding-right': '50px'
+                    }
+                ],
+                style_header_conditional=[
+                    {
+                        'if': {
+                            'column_id': 'currency'
+                        },
+                        'padding-right': '50px'
+                    }
+                ],
+            ),
+            style={'display': 'inline-block'}
+        ),
+        style={
+            "textAlign": "center",
+            "padding-bottom": "30px"
+        }
     )
 ])
 
 
 @app.callback(
     Output('memory-store', 'data'),
-    [Input('base-currency', 'value')]
+    [Input('base-currency', 'value'),
+     Input('start-date-picker', 'date'),
+     Input('end-date-picker', 'date')]
 )
-def get_data(base_currency):
-    currency_data = requests.get(f'https://api.exchangeratesapi.io/history?start_at=2018-12-31&end_at={today_data}&base={base_currency}')
+def get_data(base_currency, start_date, end_date):
+    url = f'https://api.exchangeratesapi.io/history?start_at={start_date}&end_at={end_date}&base={base_currency}'
+    currency_data = requests.get(url)
     currency_df = pd.DataFrame(currency_data.json())
 
     return currency_df.to_json(date_format='iso', orient='split')
@@ -123,12 +172,36 @@ def get_unique_currencies_list(currency_df):
 
     return unique_currencies
 
+
 @app.callback(
-    Output('start-date-picker', 'max_date_allowed'),
+    [Output('start-date-picker', 'max_date_allowed'),
+     Output('start-date-picker', 'initial_visible_month')],
+    [Input('end-date-picker', 'date')]
+)
+def max_date_start_date_picker(max_end_date):
+    dt_obj = datetime.strptime(max_end_date, '%Y-%m-%d')
+    new_dt_obj = dt_obj - timedelta(days=5)
+
+    return new_dt_obj, new_dt_obj
+
+
+@app.callback(
+    Output('end-date-picker', 'min_date_allowed'),
     [Input('start-date-picker', 'date')]
 )
-def max_start_date(max_end_date):
-    pass
+def min_date_end_date_picker(min_end_date):
+    dt_obj = datetime.strptime(min_end_date, '%Y-%m-%d')
+    new_dt_obj = dt_obj + timedelta(days=4)
+
+    return new_dt_obj
+
+
+@app.callback(
+    Output('table-header', 'children'),
+    [Input('base-currency', 'value')]
+)
+def create_table_header(base_currency):
+    return f'Last five rates of {base_currency}'
 
 
 @app.callback(
@@ -144,7 +217,7 @@ def create_table(currency_df, currencies):
     currency_df_json = pd.read_json(currency_df, orient='split')
     limit_to_five = currency_df_json[-5:]
 
-    columns = [{'name': 'currency', 'id': 'currency'}]
+    columns = [{'name': 'Currency', 'id': 'currency'}]
     date_columns = [
         {'name': data.strftime('%d-%m-%Y'), 'id': data.strftime('%d-%m-%Y')}
         for data in limit_to_five.index]

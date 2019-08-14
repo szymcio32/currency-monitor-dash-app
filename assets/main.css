@@ -1,0 +1,57 @@
+:root{
+    --text-color: #7FDBFF;
+    --bg-color: #111111;
+}
+
+h1{
+    font-size: 2.2em;
+    text-align: center;
+    color: var(--text-color);
+    margin: 0;
+    padding: 30px;
+}
+
+.main{
+    background-color: var(--bg-color);
+}
+
+.main-options{
+    display: table;
+    max-width: 700px;
+    margin: 0 auto;
+    border-collapse:separate;
+    border-spacing:50px 0px;
+}
+
+.main-options .select-data{
+    display: table-cell;
+    height: auto;
+}
+
+.main-options .small-width{
+    width: 150px;
+}
+
+.main-options .higher-width{
+    width: 300px;
+}
+
+.main-options .select-data label{
+    display: block;
+    padding-bottom: 10px;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.main-options .select-data #base-currency ,.main-options .select-data #currencies-dropdown{
+    margin-bottom: 40px;
+}
+
+.main-options .select-data #base-currency div ,.main-options .select-data #currencies-dropdown div{
+    color: #007eff;
+    background-color: var(--bg-color);
+}
+
+.main-options .select-data .Select.has-value.Select--single > .Select-control .Select-value .Select-value-label{
+    color: #007eff;
+}

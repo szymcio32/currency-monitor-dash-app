@@ -23,72 +23,84 @@ colors = {
     'text': '#7FDBFF'
 }
 
-app.layout = html.Div(style={'background': colors['background']}, children=[
+app.layout = html.Div(className="main", children=[
     html.Div([dcc.Store(id='memory-store')]),
     html.Div([dcc.Store(id='memory-store-currencies')]),
     html.H1(
-        children="Hello app",
-        style={
-            'textAlign': 'center',
-            'color': colors['text']
-        }
+        children="Dash application for currency monitoring"
     ),
 
-    html.Div(
-        children="A web application with Dash",
-        style={
-            'textAlign': 'center',
-            'color': colors['text']
-        }
-    ),
-
-    html.Div(
-        dcc.Dropdown(
-            id='currencies-dropdown',
-            value=['EUR'],
-            multi=True,
-            style={
-                'background': colors['background'],
-                'color': colors['text']
-            }
+    html.Div(children=[
+        html.Div(children=[
+            html.Label(
+                'Select base currency: ',
+            ),
+            dcc.Dropdown(
+                id='base-currency',
+                value='PLN',
+                options=[{'label': currency, 'value': currency} for currency in base_currencies]
+            ),
+            html.Div(
+                dcc.DatePickerSingle(
+                    id='start-date-picker',
+                    min_date_allowed=datetime(2019, 1, 1),
+                    max_date_allowed=(datetime.today() - timedelta(days=7)),
+                    date=datetime(2019, 1, 1),
+                    initial_visible_month=datetime(2019, 1, 1)
+                ),
+                # style={'width': '48%', 'display': 'inline-block'}
+            ),
+        ],
+            className='select-data small-width'
         ),
-        style={'width': '48%', 'display': 'inline-block'}
+
+        html.Div(children=[
+            html.Label(
+                'Select currencies: ',
+            ),
+            dcc.Dropdown(
+                id='currencies-dropdown',
+                value=['EUR'],
+                multi=True
+            ),
+            html.Div(
+                dcc.DatePickerSingle(
+                    id='end-date-picker',
+                    min_date_allowed=datetime(2019, 1, 5),
+                    max_date_allowed=today_data,
+                    date=today_data,
+                    initial_visible_month=today_data
+                ),
+                # style={'width': '48%', 'float': 'right', 'display': 'inline-block'}
+            ),
+        ],
+            className='select-data higher-width'
+        )
+    ],
+        className='main-options'
     ),
 
-    html.Div(
-        dcc.Dropdown(
-            id='base-currency',
-            value='PLN',
-            options=[{'label': currency, 'value': currency} for currency in base_currencies],
-            style={
-                'background': colors['background'],
-                'color': colors['text']
-            }
-        ),
-        style={'width': '48%', 'float': 'right', 'display': 'inline-block'}
-    ),
+    # html.Div(
+    #     dcc.DatePickerSingle(
+    #         id='start-date-picker',
+    #         min_date_allowed=datetime(2019, 1, 1),
+    #         max_date_allowed=(datetime.today()-timedelta(days=7)),
+    #         date=datetime(2019, 1, 1),
+    #         initial_visible_month=datetime(2019, 1, 1)
+    #     ),
+    #     style={'width': '48%', 'display': 'inline-block'}
+    # ),
 
-    html.Div(
-        dcc.DatePickerSingle(
-            id='start-date-picker',
-            min_date_allowed=datetime(2019, 1, 1),
-            max_date_allowed=(datetime.today()-timedelta(days=7)),
-            date=datetime(2019, 1, 1),
-            initial_visible_month=datetime(2019, 1, 1)
-        ),
-        style={'width': '48%', 'display': 'inline-block'}
-    ),
-
-    html.Div(
-        dcc.DatePickerSingle(
-            id='end-date-picker',
-            min_date_allowed=datetime(2019, 1, 5),
-            max_date_allowed=today_data,
-            date=today_data,
-            initial_visible_month=today_data
-        ),
-        style={'width': '48%', 'float': 'right', 'display': 'inline-block'}
-    ),
+    # html.Div(
+    #     dcc.DatePickerSingle(
+    #         id='end-date-picker',
+    #         min_date_allowed=datetime(2019, 1, 5),
+    #         max_date_allowed=today_data,
+    #         date=today_data,
+    #         initial_visible_month=today_data
+    #     ),
+    #     style={'width': '48%', 'float': 'right', 'display': 'inline-block'}
+    # ),
 
     dcc.Graph(
         id='currency-graph',

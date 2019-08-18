@@ -1,14 +1,22 @@
 :root{
     --text-color: #7FDBFF;
     --bg-color: #111111;
+    --input-color: #007eff;
 }
 
-h1{
-    font-size: 2.2em;
+h1, h2{
     text-align: center;
     color: var(--text-color);
     margin: 0;
     padding: 30px;
+}
+
+h1{
+    font-size: 2.2em;
+}
+
+h2{
+    font-size: 1.5em;
 }
 
 .main{
@@ -17,13 +25,15 @@ h1{
 
 .main-options{
     display: table;
-    max-width: 700px;
+    max-width: 1100px;
     margin: 0 auto;
     border-collapse:separate;
     border-spacing:50px 0px;
+    padding: 20px 0;
 }
 
 .main-options .select-data{
+    min-width: 100px;
     display: table-cell;
     height: auto;
 }
@@ -39,19 +49,61 @@ h1{
 .main-options .select-data label{
     display: block;
     padding-bottom: 10px;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: var(--text-color);
 }
 
-.main-options .select-data #base-currency ,.main-options .select-data #currencies-dropdown{
-    margin-bottom: 40px;
+.main-options .small-width label{
+    min-width: 150px;
 }
 
-.main-options .select-data #base-currency div ,.main-options .select-data #currencies-dropdown div{
-    color: #007eff;
+.main-options .select-data #base-currency div,
+.main-options .select-data #currencies-dropdown div{
+    color: var(--input-color);
     background-color: var(--bg-color);
 }
 
 .main-options .select-data .Select.has-value.Select--single > .Select-control .Select-value .Select-value-label{
-    color: #007eff;
+    color: var(--input-color);
+}
+
+.main-options .select-data #start-date-picker input,
+.main-options .select-data #end-date-picker input{
+    background-color: var(--bg-color);
+    color: var(--input-color);
+    border: none;
+    font-size: 15px;
+}
+
+@media (max-width: 870px){
+    .main-options .select-data{
+        display: block;
+        margin: 0 auto;
+        margin-bottom: 20px;
+    }
+    .main-options .select-data {
+        min-width: 300px;
+    }
+    .main-options .select-data #base-currency{
+        min-width: 130px;
+    }
+}
+
+.container{
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.container #currency-table{
+    padding-bottom: 40px;
+}
+
+.container #currency-table table{
+    margin: 0 auto;
+}
+
+@media (max-width: 900px){
+    .container #currency-table{
+        overflow-x: scroll;
+    }
 }

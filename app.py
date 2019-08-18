@@ -30,7 +30,7 @@ app.layout = html.Div(className="main", children=[
         children="Dash application for currency monitoring"
     ),
 
-    html.Div(children=[
+    html.Section(children=[
         html.Div(children=[
             html.Label(
                 'Select base currency: ',
@@ -39,16 +39,6 @@ app.layout = html.Div(className="main", children=[
                 id='base-currency',
                 value='PLN',
                 options=[{'label': currency, 'value': currency} for currency in base_currencies]
-            ),
-            html.Div(
-                dcc.DatePickerSingle(
-                    id='start-date-picker',
-                    min_date_allowed=datetime(2019, 1, 1),
-                    max_date_allowed=(datetime.today() - timedelta(days=7)),
-                    date=datetime(2019, 1, 1),
-                    initial_visible_month=datetime(2019, 1, 1)
-                ),
-                # style={'width': '48%', 'display': 'inline-block'}
             ),
         ],
             className='select-data small-width'
@@ -63,99 +53,94 @@ app.layout = html.Div(className="main", children=[
                 value=['EUR'],
                 multi=True
             ),
+        ],
+            className='select-data higher-width'
+        ),
+        html.Div(children=[
+            html.Label(
+                'Select start date: ',
+            ),
+            html.Div(
+                dcc.DatePickerSingle(
+                    id='start-date-picker',
+                    min_date_allowed=datetime(2019, 1, 1),
+                    max_date_allowed=(datetime.today() - timedelta(days=7)),
+                    date=datetime(2019, 1, 1),
+                    initial_visible_month=datetime(2019, 1, 1)
+                ),
+            ),
+        ],
+            className='select-data small-width'
+        ),
+
+        html.Div(children=[
+            html.Label(
+                'Select end date: ',
+            ),
             html.Div(
                 dcc.DatePickerSingle(
                     id='end-date-picker',
                     min_date_allowed=datetime(2019, 1, 5),
                     max_date_allowed=today_data,
                     date=today_data,
-                    initial_visible_month=today_data
+                    initial_visible_month=today_data,
+                    style={'background-color': colors['background'], 'color': colors['text']}
                 ),
-                # style={'width': '48%', 'float': 'right', 'display': 'inline-block'}
             ),
         ],
-            className='select-data higher-width'
+            className='select-data small-width'
         )
     ],
         className='main-options'
     ),
 
-    # html.Div(
-    #     dcc.DatePickerSingle(
-    #         id='start-date-picker',
-    #         min_date_allowed=datetime(2019, 1, 1),
-    #         max_date_allowed=(datetime.today()-timedelta(days=7)),
-    #         date=datetime(2019, 1, 1),
-    #         initial_visible_month=datetime(2019, 1, 1)
-    #     ),
-    #     style={'width': '48%', 'display': 'inline-block'}
-    # ),
-
-    # html.Div(
-    #     dcc.DatePickerSingle(
-    #         id='end-date-picker',
-    #         min_date_allowed=datetime(2019, 1, 5),
-    #         max_date_allowed=today_data,
-    #         date=today_data,
-    #         initial_visible_month=today_data
-    #     ),
-    #     style={'width': '48%', 'float': 'right', 'display': 'inline-block'}
-    # ),
-
-    dcc.Graph(
-        id='currency-graph',
-    ),
-
-    html.H2(
-        id="table-header",
-        style={
-            'textAlign': 'center',
-            'color': colors['text']
-        }
-    ),
-
-    html.Div(
-        html.Div(
-            dash_table.DataTable(
-                id='currency-table',
-                merge_duplicate_headers=True,
-                style_header={
-                    'textAlign': 'center',
-                    'fontWeight': 'bold',
-                    'fontSize': '15px'
-                },
-                style_cell={
-                    'padding': '10px',
-                    'backgroundColor': colors['background'],
-                    'color': colors['text'],
-                    'border': 'none',
-                },
-                style_data_conditional=[
-                    {
-                        'if': {
-                            'column_id': 'currency'
-                        },
-                        'fontSize': '15px',
-                        'color': '#CCF1FF',
-                        'textAlign': 'center',
-                        'padding-right': '50px'
-                    }
-                ],
-                style_header_conditional=[
-                    {
-                        'if': {
-                            'column_id': 'currency'
-                        },
-                        'padding-right': '50px'
-                    }
-                ],
-            ),
-            style={'display': 'inline-block'}
+    html.Section(
+        dcc.Graph(
+            id='currency-graph',
         ),
-        style={
-            "textAlign": "center",
-            "padding-bottom": "30px"
-        }
+        className='container'
+    ),
+
+    html.Section(children=[
+        html.H2(
+            id="table-header",
+        ),
+        dash_table.DataTable(
+            id='currency-table',
+            merge_duplicate_headers=True,
+            style_header={
+                'textAlign': 'center',
+                'fontWeight': 'bold',
+                'fontSize': '15px'
+            },
+            style_cell={
+                'padding': '10px',
+                'backgroundColor': colors['background'],
+                'color': colors['text'],
+                'border': 'none',
+            },
+            style_data_conditional=[
+                {
+                    'if': {
+                        'column_id': 'currency'
+                    },
+                    'fontSize': '15px',
+                    'color': '#CCF1FF',
+                    'textAlign': 'center',
+                    'padding-right': '50px'
+                }
+            ],
+            style_header_conditional=[
+                {
+                    'if': {
+                        'column_id': 'currency'
+                    },
+                    'padding-right': '50px'
+                }
+            ],
+        ),
+    ],
+        className="container"
     )
 ])
 
@@ -247,18 +232,6 @@ def create_table(currency_df, currencies):
             except KeyError:
                 single_row[date_column] = 1
         rows.append(single_row)
-    # columns = [{'name': 'Date', 'id': 'date'}]
-    # dynamic_columns = [{'name': currency, 'id': currency} for currency in ['USD', 'CAD']]
-    # columns.extend(dynamic_columns)
-    #
-    # rows = []
-    # for data, rate in zip(limit_to_five.index, limit_to_five['rates']):
-    #     single_row = {}
-    #     string_date = data.strftime('%d-%m-%Y')
-    #     single_row['date'] = string_date
-    #     for currency in ['CAD', 'USD']:
-    #         single_row[currency] = rate[currency]
-    #     rows.append(single_row)
 
     return columns, rows
 
